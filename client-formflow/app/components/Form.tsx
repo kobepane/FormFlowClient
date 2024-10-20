@@ -25,7 +25,7 @@ export default function UploadForm() {
   };
 
   return (
-    <div className="flex w-full max-w-[900px] bg-slate-200 p-8 flex-col justify-center items-start h-full max-h-[900px] rounded-md space-y-2">
+    <div className="outline flex w-full max-w-[900px] bg-[#FFFFFF] p-8 flex-col justify-center items-start h- max-h-[900px] rounded-sm space-y-2">
       <h1 className="w-full flex justify-center">
         UO PALESTINE COALITION SUPPORT PETITION
       </h1>
