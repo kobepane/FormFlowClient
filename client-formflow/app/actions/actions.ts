@@ -37,48 +37,28 @@ export async function uploadPDFs(formData: FormData) {
       const header = rows[0];
       const data = rows.slice(1);
 
-      console.log("CSV Header:", header);
-      console.log("CSV Data:", data);
+      // Create CSV content
+      const csvContent = [header, ...data]
+        .map((row) => row.join(","))
+        .join("\n");
 
-      // const result = await response.json();
-
-      // console.log(result);
-
-      // const files = result.files;
-
-      // // Now you can work with the files array
-      // files.forEach((file: string[], index: number) => {
-      //   console.log(`File ${index + 1}:`);
-      //   console.log(file);
-      //   // Process each file as needed
-      //   // Find the index of 'earnest'
-
-      //   //clean each file
-
-      //   //create csv
-      //   //return csv
-      // });
-
-      // Revalidate the path if necessary
       revalidatePath("/");
       return {
         message: `Successfully processed CSV with ${data.length} rows`,
-        header,
-        data,
+        csvContent,
+        filename: "output.csv",
       };
     } else {
       // If it's not a CSV, handle it as before (assuming JSON)
       const result = await response.json();
       console.log(result);
 
-      const files = result.files;
-
-      // Process files as before...
-
-      // Revalidate the path if necessary
       revalidatePath("/");
 
-      return { message: `Successfully uploaded ${files.length} files`, result };
+      return {
+        message: `Successfully uploaded ${result.files.length} files`,
+        result,
+      };
     }
   } catch (error) {
     console.error("Upload failed:", error);
