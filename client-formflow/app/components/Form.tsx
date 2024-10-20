@@ -5,10 +5,12 @@ import { uploadPDFs } from "../actions/actions";
 
 export default function UploadForm() {
   const [files, setFiles] = useState<FileList | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!files) return;
+    setIsLoading(true);
 
     const formData = new FormData();
     for (let i = 0; i < files.length; i++) {
@@ -18,6 +20,7 @@ export default function UploadForm() {
     try {
       const result = await uploadPDFs(formData);
       console.log(result);
+      setIsLoading(false);
       // Handle the result (e.g., show a success message or download the CSV)
     } catch (error) {
       console.error("Error uploading files:", error);
@@ -25,7 +28,7 @@ export default function UploadForm() {
   };
 
   return (
-    <div className="outline flex w-full max-w-[900px] bg-[#FFFFFF] p-8 flex-col justify-center items-start h- max-h-[900px] rounded-sm space-y-2">
+    <div className="outline flex w-full max-w-[900px] bg-[#FFFFFF] p-8 flex-col justify-center items-start min-h-[80vh] max-h-[900px] rounded-sm space-y-2">
       <h1 className="w-full flex justify-center">
         UO PALESTINE COALITION SUPPORT PETITION
       </h1>
@@ -43,12 +46,14 @@ export default function UploadForm() {
           accept=".pdf"
           onChange={(e) => setFiles(e.target.files)}
         />
-        <button
-          className="border border-black rounded-sm px-4 py-2 hover:bg-slate-300"
-          type="submit"
-        >
-          Upload PDFs
-        </button>
+        {files ? (
+          <button
+            className="border border-black rounded-sm px-4 py-2 hover:bg-slate-300"
+            type="submit"
+          >
+            {isLoading ? "Processing..." : "Upload PDFs"}
+          </button>
+        ) : null}
       </form>
     </div>
   );

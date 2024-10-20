@@ -24,14 +24,62 @@ export async function uploadPDFs(formData: FormData) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
+    // Check if the response is a CSV file
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("text/csv")) {
+      // It's a CSV file, so let's get it as text
+      const csvText = await response.text();
 
-    console.log(result);
+      // Process the CSV text
+      const rows = csvText.split("\n").map((row) => row.split(","));
 
-    // Revalidate the path if necessary
-    revalidatePath("/");
+      // The first row is typically the header
+      const header = rows[0];
+      const data = rows.slice(1);
 
-    return { message: `Successfully uploaded ${files.length} files`, result };
+      console.log("CSV Header:", header);
+      console.log("CSV Data:", data);
+
+      // const result = await response.json();
+
+      // console.log(result);
+
+      // const files = result.files;
+
+      // // Now you can work with the files array
+      // files.forEach((file: string[], index: number) => {
+      //   console.log(`File ${index + 1}:`);
+      //   console.log(file);
+      //   // Process each file as needed
+      //   // Find the index of 'earnest'
+
+      //   //clean each file
+
+      //   //create csv
+      //   //return csv
+      // });
+
+      // Revalidate the path if necessary
+      revalidatePath("/");
+      return {
+        message: `Successfully processed CSV with ${data.length} rows`,
+        header,
+        data,
+      };
+    } else {
+      // If it's not a CSV, handle it as before (assuming JSON)
+      const result = await response.json();
+      console.log(result);
+
+      const files = result.files;
+
+      // Process files as before...
+
+      // Revalidate the path if necessary
+      revalidatePath("/");
+
+      return { message: `Successfully uploaded ${files.length} files`, result };
+    }
   } catch (error) {
     console.error("Upload failed:", error);
     return { message: "File upload failed" };
